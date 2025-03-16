@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Attendance System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">📌 Smart Attendance System</h2>
+
+        <button class="btn btn-success my-3" onclick="startFaceRecognition()">Start Face Recognition</button>
+        <button class="btn btn-primary my-3" onclick="downloadCSV()">Download Attendance CSV</button>
+
+        <h3 class="mt-4">📋 Attendance Records</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Year</th>
+                    <th>Department</th>
+                    <th>Section</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="attendance-table">
+                {% for record in data %}
+                <tr>
+                    <td>{{ record[0] }}</td>
+                    <td>{{ record[1] }}</td>
+                    <td>{{ record[2] }}</td>
+                    <td>{{ record[3] }}</td>
+                    <td>{{ record[4] }}</td>
+                    <td>{{ record[5] }}</td>
+                    <td>{{ record[6] }}</td>
+                    <td>{{ record[7] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function downloadCSV() {
+            window.location.href = "/download";
+        }
+
+        function startFaceRecognition() {
+            fetch("/start-recognition").then(response => {
+                alert("Face Recognition System Started!");
+            });
+        }
+
+        function refreshData() {
+            fetch("/data")
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById("attendance-table");
+                    tableBody.innerHTML = "";
+                    data.forEach(record => {
+                        let row = `<tr>${record.map(item => `<td>${item}</td>`).join("")}</tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                });
+        }
+
+        setInterval(refreshData, 5000);
+    </script>
+</body>
+</html>
